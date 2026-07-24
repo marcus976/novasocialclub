@@ -98,7 +98,7 @@
   window.addEventListener('scroll', setActiveLink, { passive: true });
 
   /* ── Form submission handler (shared) ───────────────────── */
-  function wireForm(formId, successId, storageKey) {
+  function wireForm(formId, successId) {
     const form = document.getElementById(formId);
     const success = document.getElementById(successId);
     if (!form || !success) return;
@@ -121,37 +121,68 @@
 
       if (!valid) return;
 
-      // Capture form data to localStorage (swap for webhook/backend later)
-      const data = {};
-      new FormData(form).forEach(function (value, key) { data[key] = value; });
-      data.timestamp = new Date().toISOString();
+      // Submit to the backend
+      const endpoint = form.getAttribute('data-endpoint');
+      const payload = {};
+      new FormData(form).forEach(function (value, key) { payload[key] = value; });
 
-      const existing = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      existing.push(data);
-      localStorage.setItem(storageKey, JSON.stringify(existing));
+      fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function (r) { return r.json(); }).then(function (res) {
+        if (!res.ok) { throw new Error((res.errors && res.errors[0]) || 'Submission failed'); }
 
-      // Animate form out, show success
-      form.style.transition = 'opacity 0.4s, transform 0.4s';
-      form.style.opacity    = '0';
-      form.style.transform  = 'translateY(-10px)';
+        // Animate form out, show success
+        form.style.transition = 'opacity 0.4s, transform 0.4s';
+        form.style.opacity    = '0';
+        form.style.transform  = 'translateY(-10px)';
 
-      setTimeout(function () {
-        form.hidden = true;
-        success.hidden = false;
-        success.style.opacity   = '0';
-        success.style.transform = 'translateY(10px)';
-        success.style.transition = 'opacity 0.4s, transform 0.4s';
+        setTimeout(function () {
+          form.hidden = true;
+          success.hidden = false;
+          success.style.opacity   = '0';
+          success.style.transform = 'translateY(10px)';
+          success.style.transition = 'opacity 0.4s, transform 0.4s';
 
-        requestAnimationFrame(function () {
-          success.style.opacity   = '1';
-          success.style.transform = 'translateY(0)';
-        });
-      }, 400);
+          requestAnimationFrame(function () {
+            success.style.opacity   = '1';
+            success.style.transform = 'translateY(0)';
+          });
+        }, 400);
+      }).catch(function (err) {
+        alert(err.message); // keep the form visible so the user can retry
+      });
     });
   }
 
-  wireForm('apply-form',   'form-success',    'nova_membership_applications');
-  wireForm('partner-form', 'partner-success', 'nova_partnership_inquiries');
+  wireForm('apply-form',   'form-success');
+  wireForm('partner-form', 'partner-success');
+
+  /* ── Newsletter signup ──────────────────────────────────── */
+  const nlForm = document.getElementById('newsletter-form');
+  if (nlForm) {
+    nlForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const msg = document.getElementById('newsletter-msg');
+      const payload = {};
+      new FormData(nlForm).forEach(function (v, k) { payload[k] = v; });
+      fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function (r) { return r.json(); }).then(function (res) {
+        msg.hidden = false;
+        msg.textContent = res.ok
+          ? "You're subscribed — check your inbox."
+          : ((res.errors && res.errors[0]) || 'Please try again.');
+        if (res.ok) nlForm.reset();
+      }).catch(function () {
+        msg.hidden = false;
+        msg.textContent = 'Please try again.';
+      });
+    });
+  }
 
   /* ── Smooth anchor scroll (polyfill for older browsers) ─── */
   document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {

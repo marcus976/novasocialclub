@@ -306,7 +306,8 @@
           <div class="form-card">
             <h3>Apply for Membership</h3>
             <p class="form-card__sub">Tell us a little about yourself. Applications are reviewed on a rolling basis.</p>
-            <form id="apply-form" novalidate>
+            <form id="apply-form" data-endpoint="/api/apply" novalidate>
+              <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true" />
               <div class="form-row">
                 <div class="form-field">
                   <label for="fname">First Name</label>
@@ -320,6 +321,18 @@
               <div class="form-field">
                 <label for="email">Email Address</label>
                 <input type="email" id="email" name="email" placeholder="you@example.com" required />
+              </div>
+              <div class="form-field">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone" placeholder="(571) 555-0123" />
+              </div>
+              <div class="form-field">
+                <label for="company">Company</label>
+                <input type="text" id="company" name="company" placeholder="Where you work" />
+              </div>
+              <div class="form-field">
+                <label for="linkedin">LinkedIn</label>
+                <input type="url" id="linkedin" name="linkedin" placeholder="linkedin.com/in/you" />
               </div>
               <div class="form-field">
                 <label for="profession">What do you do?</label>
@@ -395,7 +408,8 @@
           <div class="form-card">
             <h3>Partnership Inquiry</h3>
             <p class="form-card__sub">Tell us about your business and how you'd like to work together. We reply within a few business days.</p>
-            <form id="partner-form" novalidate>
+            <form id="partner-form" data-endpoint="/api/partner" novalidate>
+              <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true" />
               <div class="form-field">
                 <label for="p-business">Business Name</label>
                 <input type="text" id="p-business" name="business" placeholder="Your business or brand" required />
@@ -484,6 +498,15 @@
             </svg>
           </a>
         </div>
+        <form id="newsletter-form" class="newsletter" novalidate>
+          <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true" />
+          <label for="nl-email" class="newsletter__label">Join our newsletter</label>
+          <div class="newsletter__row">
+            <input type="email" id="nl-email" name="email" placeholder="you@example.com" required />
+            <button type="submit" class="btn btn--blue-filled">Subscribe</button>
+          </div>
+          <p class="newsletter__msg" id="newsletter-msg" hidden></p>
+        </form>
       </div>
 
       <nav class="footer__nav" aria-label="Footer">
