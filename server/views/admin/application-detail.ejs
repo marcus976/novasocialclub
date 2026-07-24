@@ -1,0 +1,32 @@
+<p><a href="/admin/applications">← All applications</a></p>
+<h1><%= a.first_name %> <%= a.last_name %> <span class="badge"><%= a.status %></span></h1>
+<div class="card">
+  <p><b>Email:</b> <%= a.email %> &nbsp; <b>Phone:</b> <%= a.phone || '—' %></p>
+  <p><b>Company:</b> <%= a.company || '—' %> &nbsp; <b>Profession:</b> <%= a.profession || '—' %></p>
+  <p><b>LinkedIn:</b> <%= a.linkedin || '—' %> &nbsp; <b>Area:</b> <%= a.area || '—' %></p>
+  <p><b>Why join:</b><br><%= a.why || '—' %></p>
+</div>
+<% if (a.status === 'pending') { %>
+<div class="card">
+  <h3>Accept</h3>
+  <form method="post" action="/admin/applications/<%= a.id %>/accept" class="actions">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <select name="level"><% Object.keys(LEVELS).forEach(function(k){ %><option value="<%= k %>"><%= LEVELS[k] %></option><% }); %></select>
+    <button class="btn-primary">Accept &amp; create login</button>
+  </form>
+  <h3>Reject</h3>
+  <form method="post" action="/admin/applications/<%= a.id %>/reject" class="actions">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" name="notify" style="width:auto"> Email applicant</label>
+    <button>Reject</button>
+  </form>
+</div>
+<% } %>
+<div class="card">
+  <h3>Private notes</h3>
+  <form method="post" action="/admin/applications/<%= a.id %>/notes">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <textarea name="notes" rows="4"><%= a.admin_notes || '' %></textarea>
+    <button class="btn-primary">Save notes</button>
+  </form>
+</div>

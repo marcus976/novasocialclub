@@ -58,5 +58,62 @@ module.exports = function adminRoutes(getDb) {
     renderPage(res, 'admin/dashboard', { title: 'Dashboard', nav: true, csrfToken: res.locals.csrfToken, counts, recent: all.slice(0, 10) });
   });
 
+  router.get('/applications', async (req, res) => {
+    const db = await getDb();
+    const status = req.query.status || '';
+    const rows = await appsRepo.list(db, status ? { status } : {});
+    renderPage(res, 'admin/applications', { title: 'Applications', nav: true, csrfToken: res.locals.csrfToken, rows, status, LEVELS });
+  });
+
+  router.get('/applications/:id', async (req, res) => {
+    const db = await getDb();
+    const a = await appsRepo.getById(db, Number(req.params.id));
+    if (!a) return res.status(404).send('Not found');
+    renderPage(res, 'admin/application-detail', { title: 'Application', nav: true, csrfToken: res.locals.csrfToken, a, LEVELS });
+  });
+
+  router.post('/applications/:id/accept', async (req, res) => {
+    const db = await getDb();
+    const id = Number(req.params.id);
+    const level = String(req.body.level || '');
+    if (!LEVELS[level]) return res.status(400).send('Invalid level');
+    const a = await appsRepo.getById(db, id);
+    if (!a) return res.status(404).send('Not found');
+    await appsRepo.setStatus(db, id, 'accepted', level, new Date());
+    const existing = await membersRepo.getByEmail(db, a.email);
+    const token = tokens.newToken();
+    const expires = tokens.expiryFromNow(7);
+    let member;
+    if (existing) {
+      await membersRepo.setLevel(db, existing.id, level);
+      member = await membersRepo.setSetToken(db, existing.id, token, expires);
+    } else {
+      member = await membersRepo.createFromApplication(db, a, level, token, expires);
+    }
+    const url = `${config.appBaseUrl}/member/set-password?token=${token}`;
+    const t = email.welcomeSetPasswordEmail(member, url);
+    await email.sendEmail(db, { to: member.email, subject: t.subject, html: t.html, type: 'welcome_set_password', memberId: member.id });
+    res.redirect(`/admin/applications/${id}`);
+  });
+
+  router.post('/applications/:id/reject', async (req, res) => {
+    const db = await getDb();
+    const id = Number(req.params.id);
+    const a = await appsRepo.getById(db, id);
+    if (!a) return res.status(404).send('Not found');
+    await appsRepo.setStatus(db, id, 'rejected', null, new Date());
+    if (req.body.notify === 'on') {
+      const t = email.rejectionEmail(a);
+      await email.sendEmail(db, { to: a.email, subject: t.subject, html: t.html, type: 'rejection' });
+    }
+    res.redirect(`/admin/applications/${id}`);
+  });
+
+  router.post('/applications/:id/notes', async (req, res) => {
+    const db = await getDb();
+    await appsRepo.addNote(db, Number(req.params.id), V.cleanStr(req.body.notes, 2000));
+    res.redirect(`/admin/applications/${req.params.id}`);
+  });
+
   return router;
 };
