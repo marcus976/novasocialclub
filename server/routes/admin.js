@@ -166,5 +166,39 @@ module.exports = function adminRoutes(getDb) {
     res.redirect(`/admin/members/${m.id}`);
   });
 
+  router.get('/newsletter', async (req, res) => {
+    const db = await getDb();
+    const rows = await subsRepo.list(db);
+    renderPage(res, 'admin/newsletter', { title: 'Newsletter', nav: true, csrfToken: res.locals.csrfToken, rows });
+  });
+
+  router.get('/newsletter/export.csv', async (req, res) => {
+    const db = await getDb();
+    const rows = await subsRepo.list(db);
+    const csv = ['email,status,created_at']
+      .concat(rows.map(r => `${r.email},${r.status},${new Date(r.created_at).toISOString()}`))
+      .join('\n');
+    res.type('text/csv').set('Content-Disposition', 'attachment; filename="subscribers.csv"').send(csv);
+  });
+
+  router.post('/newsletter/broadcast', async (req, res) => {
+    const db = await getDb();
+    const subject = V.cleanStr(req.body.subject, 200);
+    const body = String(req.body.body || '');
+    const all = await subsRepo.list(db);
+    for (const s of all.filter(x => x.status === 'subscribed')) {
+      const unsub = `${config.appBaseUrl}/unsubscribe?token=${s.unsubscribe_token}`;
+      const t = email.broadcastEmail(subject, body, unsub);
+      await email.sendEmail(db, { to: s.email, subject: t.subject, html: t.html, type: 'broadcast' });
+    }
+    res.redirect('/admin/newsletter');
+  });
+
+  router.get('/partners', async (req, res) => {
+    const db = await getDb();
+    const rows = await partnersRepo.list(db);
+    renderPage(res, 'admin/partners', { title: 'Partners', nav: true, csrfToken: res.locals.csrfToken, rows });
+  });
+
   return router;
 };

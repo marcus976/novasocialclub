@@ -1,0 +1,13 @@
+<h1>Newsletter</h1>
+<p><a class="badge" href="/admin/newsletter/export.csv">Export CSV</a> &nbsp; <%= rows.filter(function(r){return r.status==='subscribed';}).length %> active subscribers</p>
+<div class="card"><h3>Send a broadcast</h3>
+  <form method="post" action="/admin/newsletter/broadcast">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>Subject<input name="subject" required></label>
+    <label>Body (HTML allowed)<textarea name="body" rows="8" required></textarea></label>
+    <button class="btn-primary">Send to all subscribers</button>
+  </form>
+</div>
+<table class="data"><thead><tr><th>Email</th><th>Status</th><th>Joined</th></tr></thead><tbody>
+<% rows.forEach(function(s){ %><tr><td><%= s.email %></td><td><%= s.status %></td><td><%= new Date(s.created_at).toLocaleDateString() %></td></tr><% }); %>
+</tbody></table>
