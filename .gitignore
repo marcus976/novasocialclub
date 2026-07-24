@@ -20,3 +20,10 @@ build/
 
 # Logs
 *.log
+
+# Env
+.env
+
+# bun
+bun.lock
+bun.lockb
