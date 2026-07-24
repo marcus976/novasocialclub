@@ -1,0 +1,2 @@
+attached_assets/VIDEO_1_2_1784924310955.MP4 filter=lfs diff=lfs merge=lfs -text
+photos/nova-hero.mp4 filter=lfs diff=lfs merge=lfs -text
