@@ -11,6 +11,9 @@ function createApp(opts = {}) {
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  const dbForSession = opts.db || null;
+  app.use(require('./auth').sessionMiddleware(dbForSession));
+
   const getDb = opts.db ? async () => opts.db : require('./db').getDb;
 
   app.use('/', require('./routes/public')(getDb));
