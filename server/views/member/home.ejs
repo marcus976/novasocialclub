@@ -1,0 +1,7 @@
+<div class="card">
+  <h1>Welcome, <%= m.first_name %></h1>
+  <p><b>Membership:</b> <%= levelLabel %> &nbsp; <span class="badge"><%= m.status %></span></p>
+  <h3>Your perks</h3>
+  <ul><% perks.forEach(function(p){ %><li><%= p %></li><% }); %></ul>
+  <form method="post" action="/member/logout"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button>Log out</button></form>
+</div>
