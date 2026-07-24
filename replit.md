@@ -4,12 +4,33 @@ A single-page marketing website for The NOVA Social Club, a professional network
 
 ## Stack
 
-- Pure static HTML / CSS / Vanilla JS — no build step, no framework
-- Served via `npx serve` on port 5000
+- Static marketing site: HTML / CSS / Vanilla JS — no build step, no framework
+- Backend: Node/Express (`server/`) serving the static site + admin/member portals
+- Data: PostgreSQL (Replit Postgres in prod; in-memory PGlite for local/tests)
+- Email: Resend
+- Served via `node server/index.js` on port 5000
 
 ## Running the site
 
-The **Start application** workflow serves the site. It starts automatically. Visit the preview pane to see it live.
+The **Start application** workflow runs `node server/index.js`, which serves both
+the marketing site and the backend. It starts automatically. Visit the preview
+pane to see it live.
+
+## Backend
+
+The site now has a full backend behind the marketing pages:
+
+- **Public endpoints** — the membership application, partner, and footer
+  newsletter forms POST to `/api/apply`, `/api/partner`, `/api/newsletter`.
+- **Admin portal** at `/admin` (single admin login): dashboard, review/accept/
+  reject applications with membership levels (Founding Member / Member /
+  Associate), manage members, send member emails, newsletter broadcast + CSV
+  export, and partner inquiries.
+- **Member area** at `/member`: accepted members set a password from their
+  welcome email and view a "My Membership" page.
+
+Setup, secrets, and deployment steps are in [docs/DEPLOY.md](./docs/DEPLOY.md).
+Design and implementation notes are under `docs/superpowers/`.
 
 ## Project structure
 
