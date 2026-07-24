@@ -1,0 +1,29 @@
+const { test, expect } = require('bun:test');
+const { freshDb } = require('./helpers');
+const { createApp } = require('../server/index.js');
+const auth = require('../server/auth');
+const admins = require('../server/repo/admins');
+const membersRepo = require('../server/repo/members');
+const appsRepo = require('../server/repo/applications');
+const { newToken, expiryFromNow } = require('../server/tokens');
+const email = require('../server/email');
+
+test('admin can send a one-off email to a member', async () => {
+  const db = await freshDb();
+  await admins.upsert(db, 'a@n.com', await auth.hashPassword('pw12345'));
+  email.__setSender(async () => ({ id: 'x' }));
+  const a = await appsRepo.create(db, { first_name: 'M', last_name: 'X', email: 'm@x.com', phone: '', company: '', profession: '', linkedin: '', area: '', why: '' });
+  const m = await membersRepo.createFromApplication(db, a, 'member', newToken(), expiryFromNow(7));
+  const app = createApp({ db });
+  const server = app.listen(0);
+  const base = `http://localhost:${server.address().port}`;
+  const page = await fetch(`${base}/admin/login`);
+  const cookie = page.headers.get('set-cookie').split(';')[0];
+  const csrf = (await page.text()).match(/name="_csrf" value="([^"]+)"/)[1];
+  await fetch(`${base}/admin/login`, { method: 'POST', redirect: 'manual', headers: { 'content-type': 'application/x-www-form-urlencoded', cookie }, body: new URLSearchParams({ email: 'a@n.com', password: 'pw12345', _csrf: csrf }) });
+  const res = await fetch(`${base}/admin/members/${m.id}/email`, { method: 'POST', redirect: 'manual', headers: { 'content-type': 'application/x-www-form-urlencoded', cookie }, body: new URLSearchParams({ subject: 'Hello', body: '<p>hi</p>', _csrf: csrf }) });
+  expect(res.status).toBe(302);
+  const { rows } = await db.query("SELECT * FROM email_log WHERE type='member_email' AND member_id=$1", [m.id]);
+  expect(rows.length).toBe(1);
+  server.close(); await db.close();
+});

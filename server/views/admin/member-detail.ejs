@@ -1,0 +1,30 @@
+<p><a href="/admin/members">← All members</a></p>
+<h1><%= m.first_name %> <%= m.last_name %> <span class="badge"><%= m.status %></span></h1>
+<div class="card">
+  <p><b>Email:</b> <%= m.email %> &nbsp; <b>Phone:</b> <%= m.phone || '—' %></p>
+  <p><b>Company:</b> <%= m.company || '—' %> &nbsp; <b>LinkedIn:</b> <%= m.linkedin || '—' %></p>
+  <p><b>Login:</b> <%= m.password_hash ? 'active' : 'not set yet' %></p>
+</div>
+<div class="card"><h3>Membership level</h3>
+  <form method="post" action="/admin/members/<%= m.id %>/level" class="actions">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <select name="level"><% Object.keys(LEVELS).forEach(function(k){ %><option value="<%= k %>" <%= m.membership_level===k?'selected':'' %>><%= LEVELS[k] %></option><% }); %></select>
+    <button class="btn-primary">Update level</button>
+  </form>
+  <h3>Status</h3>
+  <form method="post" action="/admin/members/<%= m.id %>/status" class="actions">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <select name="status"><option value="active" <%= m.status==='active'?'selected':'' %>>active</option><option value="inactive" <%= m.status==='inactive'?'selected':'' %>>inactive</option></select>
+    <button>Update status</button>
+  </form>
+  <h3>Login link</h3>
+  <form method="post" action="/admin/members/<%= m.id %>/resend"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button>Resend set-password email</button></form>
+</div>
+<div class="card"><h3>Email this member</h3>
+  <form method="post" action="/admin/members/<%= m.id %>/email">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>Subject<input name="subject" required></label>
+    <label>Message (HTML allowed)<textarea name="body" rows="6" required></textarea></label>
+    <button class="btn-primary">Send email</button>
+  </form>
+</div>

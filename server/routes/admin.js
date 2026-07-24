@@ -115,5 +115,56 @@ module.exports = function adminRoutes(getDb) {
     res.redirect(`/admin/applications/${req.params.id}`);
   });
 
+  router.get('/members', async (req, res) => {
+    const db = await getDb();
+    const q = req.query.q || '';
+    const rows = await membersRepo.list(db, q ? { q } : {});
+    renderPage(res, 'admin/members', { title: 'Members', nav: true, csrfToken: res.locals.csrfToken, rows, q, LEVELS });
+  });
+
+  router.get('/members/:id', async (req, res) => {
+    const db = await getDb();
+    const m = await membersRepo.getById(db, Number(req.params.id));
+    if (!m) return res.status(404).send('Not found');
+    renderPage(res, 'admin/member-detail', { title: 'Member', nav: true, csrfToken: res.locals.csrfToken, m, LEVELS });
+  });
+
+  router.post('/members/:id/level', async (req, res) => {
+    const db = await getDb();
+    const level = String(req.body.level || '');
+    if (!LEVELS[level]) return res.status(400).send('Invalid level');
+    await membersRepo.setLevel(db, Number(req.params.id), level);
+    res.redirect(`/admin/members/${req.params.id}`);
+  });
+
+  router.post('/members/:id/status', async (req, res) => {
+    const db = await getDb();
+    const status = req.body.status === 'inactive' ? 'inactive' : 'active';
+    await membersRepo.setStatus(db, Number(req.params.id), status);
+    res.redirect(`/admin/members/${req.params.id}`);
+  });
+
+  router.post('/members/:id/resend', async (req, res) => {
+    const db = await getDb();
+    const m = await membersRepo.getById(db, Number(req.params.id));
+    if (!m) return res.status(404).send('Not found');
+    const token = tokens.newToken();
+    await membersRepo.setSetToken(db, m.id, token, tokens.expiryFromNow(7));
+    const url = `${config.appBaseUrl}/member/set-password?token=${token}`;
+    const t = email.welcomeSetPasswordEmail(m, url);
+    await email.sendEmail(db, { to: m.email, subject: t.subject, html: t.html, type: 'welcome_set_password', memberId: m.id });
+    res.redirect(`/admin/members/${m.id}`);
+  });
+
+  router.post('/members/:id/email', async (req, res) => {
+    const db = await getDb();
+    const m = await membersRepo.getById(db, Number(req.params.id));
+    if (!m) return res.status(404).send('Not found');
+    const subject = V.cleanStr(req.body.subject, 200);
+    const body = String(req.body.body || '');
+    await email.sendEmail(db, { to: m.email, subject, html: `<div style="font-family:Georgia,serif">${body}</div>`, type: 'member_email', memberId: m.id });
+    res.redirect(`/admin/members/${m.id}`);
+  });
+
   return router;
 };
