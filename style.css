@@ -359,8 +359,8 @@ p {
   margin-bottom: 2rem;
   filter: brightness(0) invert(1); /* ensure white */
 }
-.text-\[16px\] { font-size: 16px; }
-.font-semibold { font-weight: 600; }
+.text-\[18px\] { font-size: 18px; }
+.font-bold { font-weight: 700; }
 
 .hero__tagline {
   font-family: var(--font-body);
