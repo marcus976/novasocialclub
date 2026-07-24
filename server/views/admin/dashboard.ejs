@@ -1,0 +1,12 @@
+<h1>Dashboard</h1>
+<div class="stat-grid">
+  <div class="stat"><span class="num"><%= counts.pending %></span><span class="lbl">Pending applications</span></div>
+  <div class="stat"><span class="num"><%= counts.members %></span><span class="lbl">Members</span></div>
+  <div class="stat"><span class="num"><%= counts.subscribers %></span><span class="lbl">Subscribers</span></div>
+</div>
+<h2>Recent applications</h2>
+<table class="data"><thead><tr><th>Name</th><th>Email</th><th>Status</th><th>When</th></tr></thead><tbody>
+<% recent.forEach(function(a){ %>
+  <tr><td><a href="/admin/applications/<%= a.id %>"><%= a.first_name %> <%= a.last_name %></a></td><td><%= a.email %></td><td><%= a.status %></td><td><%= new Date(a.created_at).toLocaleDateString() %></td></tr>
+<% }); %>
+</tbody></table>

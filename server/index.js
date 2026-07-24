@@ -17,6 +17,8 @@ function createApp(opts = {}) {
   const getDb = opts.db ? async () => opts.db : require('./db').getDb;
 
   app.use('/', require('./routes/public')(getDb));
+  app.get('/portal.css', (req, res) => res.type('css').sendFile(path.join(__dirname, 'public-admin.css')));
+  app.use('/admin', require('./routes/admin')(getDb));
   app.use(express.static(rootDir, { extensions: ['html'] }));
 
   // eslint-disable-next-line no-unused-vars
