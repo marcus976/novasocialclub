@@ -352,7 +352,7 @@ p {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: calc(var(--nav-h) + 2rem) 1.5rem 4rem;
+  padding: calc(var(--nav-h) + 2rem) 1.5rem 8rem;
 }
 .hero__logo {
   width: min(420px, 72vw);
