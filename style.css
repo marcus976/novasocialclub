@@ -361,6 +361,7 @@ p {
 }
 .text-\[18px\] { font-size: 18px; }
 .font-bold { font-weight: 700; }
+.font-normal { font-weight: 400; }
 
 .hero__tagline {
   font-family: var(--font-body);
