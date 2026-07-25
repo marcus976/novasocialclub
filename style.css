@@ -363,6 +363,7 @@ p {
 .font-bold { font-weight: 700; }
 .font-normal { font-weight: 400; }
 .text-\[color\:var\(--blue\)\] { color: var(--blue); }
+.text-\[color\:var\(--blue-light\)\] { color: var(--blue-light); }
 
 .hero__tagline {
   font-family: var(--font-body);
