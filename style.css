@@ -532,6 +532,29 @@ p {
   color: var(--gray-500);
 }
 
+.about__mini-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 130px;
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 340px;
+}
+.about__mini-photo {
+  margin: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--gray-100);
+  transition: transform 0.4s var(--ease);
+}
+.about__mini-photo:hover { transform: translateY(-3px); }
+.about__mini-photo--tall { grid-row: span 2; }
+.about__mini-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .about__text { padding: 1rem 0; }
 .about__text h2 { color: var(--black); }
 .about__text p { margin-bottom: 1.1rem; }
