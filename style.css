@@ -364,8 +364,8 @@ p {
 
 .hero__tagline {
   font-family: var(--font-body);
-  font-weight: 400;
-  font-size: clamp(0.85rem, 1.1vw, 1rem);
+  font-weight: 700;
+  font-size: 18px;
   color: rgba(255,255,255,0.85);
   letter-spacing: 0.04em;
   text-transform: none;
