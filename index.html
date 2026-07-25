@@ -351,16 +351,59 @@
                 <input type="email" id="email" name="email" placeholder="you@example.com" required />
               </div>
               <div class="form-field">
-                <label for="profession">What do you do?</label>
-                <input type="text" id="profession" name="profession" placeholder="Founder, Product Manager, Marketer…" />
+                <label for="phone">Cellphone Number</label>
+                <input type="tel" id="phone" name="phone" placeholder="(555) 555-5555" />
               </div>
               <div class="form-field">
-                <label for="area">Where in NoVA?</label>
-                <input type="text" id="area" name="area" placeholder="Arlington, Tysons, Alexandria, Reston…" />
+                <label for="age">Age</label>
+                <select id="age" name="age" required>
+                  <option value="" disabled selected>Select your age range</option>
+                  <option value="21-25">21–25</option>
+                  <option value="25-30">25–30</option>
+                  <option value="31-35">31–35</option>
+                  <option value="36-40">36–40</option>
+                  <option value="41-45">41–45</option>
+                  <option value="46+">46+</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <div class="form-field">
+                  <label for="live-va">Do you live in Virginia?</label>
+                  <select id="live-va" name="live_va" required>
+                    <option value="" disabled selected>Select</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label for="work-va">Do you work in Virginia?</label>
+                  <select id="work-va" name="work_va" required>
+                    <option value="" disabled selected>Select</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </div>
               </div>
               <div class="form-field">
-                <label for="why">Why do you want to join NOVA?</label>
-                <textarea id="why" name="why" rows="4" placeholder="Tell us what you'd bring to the community…"></textarea>
+                <label for="industry">Industry</label>
+                <input type="text" id="industry" name="industry" placeholder="e.g. Tech, Finance, Healthcare, Real Estate…" required />
+              </div>
+              <div class="form-field">
+                <label for="occupation">Occupation</label>
+                <input type="text" id="occupation" name="occupation" placeholder="e.g. Software Engineer, Attorney, Founder…" required />
+              </div>
+              <div class="form-field">
+                <label for="linkedin">LinkedIn Profile Name</label>
+                <input type="text" id="linkedin" name="linkedin" placeholder="linkedin.com/in/yourname" />
+              </div>
+              <div class="form-field">
+                <label for="why-join">Why do you want to join the NOVA Social Club?</label>
+                <textarea id="why-join" name="why_join" rows="4" placeholder="Tell us what draws you to the community…" required></textarea>
+              </div>
+              <div class="form-field">
+                <label for="goals">What are you looking to get out of membership?</label>
+                <textarea id="goals" name="goals" rows="4" placeholder="e.g. expand your network, find community, access events…"></textarea>
               </div>
               <button type="submit" class="btn btn--submit">Submit Application →</button>
             </form>
