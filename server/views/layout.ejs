@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title><%= title %> — NOVA Admin</title>
+<link rel="stylesheet" href="/portal.css">
+</head><body>
+<% if (typeof nav !== 'undefined' && nav) { %>
+<nav class="portal-nav">
+  <a class="brand" href="/admin">NOVA Admin</a>
+  <a href="/admin">Dashboard</a>
+  <a href="/admin/applications">Applications</a>
+  <a href="/admin/members">Members</a>
+  <a href="/admin/newsletter">Newsletter</a>
+  <a href="/admin/partners">Partners</a>
+  <form method="post" action="/admin/logout" class="logout"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button>Log out</button></form>
+</nav>
+<% } %>
+<main class="portal-main"><%- body %></main>
+</body></html>

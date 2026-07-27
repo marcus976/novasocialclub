@@ -1267,3 +1267,10 @@ p {
   .hero__ctas .btn { text-align: center; justify-content: center; }
   .about__stat-block { gap: 1.5rem; }
 }
+
+/* ── Newsletter signup (footer) ─────────────────────────── */
+.newsletter{position:relative;margin-top:20px;max-width:420px}
+.newsletter__label{display:block;margin-bottom:8px;font-weight:600}
+.newsletter__row{display:flex;gap:8px}
+.newsletter__row input{flex:1}
+.newsletter__msg{margin-top:8px;font-size:14px;opacity:.85}

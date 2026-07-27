@@ -1,0 +1,10 @@
+<div class="card auth-card">
+  <h1>Member login</h1>
+  <% if (error) { %><p class="error"><%= error %></p><% } %>
+  <form method="post" action="/member/login">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <label>Email<input type="email" name="email" required></label>
+    <label>Password<input type="password" name="password" required></label>
+    <button class="btn-primary">Log in</button>
+  </form>
+</div>
