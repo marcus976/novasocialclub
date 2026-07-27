@@ -1,4 +1,4 @@
-modules = ["web", "nodejs-20", "python-base-3.13"]
+modules = ["web", "nodejs-20", "python-base-3.13", "postgresql-16"]
 
 [nix]
 channel = "stable-25_05"
@@ -13,3 +13,8 @@ externalPort = 80
 [deployment]
 deploymentTarget = "autoscale"
 run = ["node", "server/index.js"]
+
+[userenv]
+
+[userenv.shared]
+ADMIN_EMAIL = "Marcus@thenovasocialclub.com"
