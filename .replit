@@ -18,3 +18,23 @@ run = ["node", "server/index.js"]
 
 [userenv.shared]
 ADMIN_EMAIL = "Marcus@thenovasocialclub.com"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start server"
+
+[[workflows.workflow]]
+name = "Start server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node server/index.js"
