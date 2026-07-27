@@ -5,6 +5,7 @@ const { config } = require('./config');
 
 function createApp(opts = {}) {
   const app = express();
+  app.set('trust proxy', 1);
   const rootDir = path.join(__dirname, '..');
   app.set('view engine', 'ejs');
   app.set('views', path.join(__dirname, 'views'));
@@ -32,9 +33,20 @@ function createApp(opts = {}) {
 
 if (require.main === module) {
   const app = createApp();
-  app.listen(config.port, () => {
+  const server = app.listen(config.port, '0.0.0.0', () => {
     console.log(`NOVA server listening on :${config.port}`);
   });
+  server.ref();
+
+  // Keep the event loop alive and handle graceful shutdown.
+  const keepAlive = setInterval(() => {}, 1 << 30);
+  function shutdown(signal) {
+    console.log(`Received ${signal}, shutting down…`);
+    clearInterval(keepAlive);
+    server.close(() => process.exit(0));
+  }
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT',  () => shutdown('SIGINT'));
 }
 
 module.exports = { createApp };
