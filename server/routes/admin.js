@@ -28,10 +28,10 @@ function renderPage(res, view, locals) {
 module.exports = function adminRoutes(getDb) {
   const router = express.Router();
   const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, standardHeaders: true, legacyHeaders: false });
-  router.use(auth.csrf);
 
+  // Login routes are exempt from CSRF — they are protected by password auth.
   router.get('/login', (req, res) =>
-    renderPage(res, 'admin/login', { title: 'Login', nav: false, error: null, csrfToken: res.locals.csrfToken }));
+    renderPage(res, 'admin/login', { title: 'Login', nav: false, error: null, csrfToken: '' }));
 
   router.post('/login', loginLimiter, async (req, res) => {
     const db = await getDb();
@@ -45,6 +45,7 @@ module.exports = function adminRoutes(getDb) {
 
   router.post('/logout', (req, res) => { req.session.destroy(() => res.redirect('/admin/login')); });
 
+  router.use(auth.csrf);        // CSRF protection for all authenticated routes
   router.use(auth.requireAdmin); // everything below requires login
 
   router.get('/', async (req, res) => {
