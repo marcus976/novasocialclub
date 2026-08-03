@@ -32,21 +32,30 @@ function createApp(opts = {}) {
 }
 
 if (require.main === module) {
-  const app = createApp();
-  const server = app.listen(config.port, '0.0.0.0', () => {
-    console.log(`NOVA server listening on :${config.port}`);
-  });
-  server.ref();
+  const { getDb } = require('./db');
+  const { migrate } = require('./migrate');
 
-  // Keep the event loop alive and handle graceful shutdown.
-  const keepAlive = setInterval(() => {}, 1 << 30);
-  function shutdown(signal) {
-    console.log(`Received ${signal}, shutting down…`);
-    clearInterval(keepAlive);
-    server.close(() => process.exit(0));
-  }
-  process.on('SIGTERM', () => shutdown('SIGTERM'));
-  process.on('SIGINT',  () => shutdown('SIGINT'));
+  (async () => {
+    const db = await getDb();
+    await migrate(db);
+    console.log('Database migration complete.');
+
+    const app = createApp();
+    const server = app.listen(config.port, '0.0.0.0', () => {
+      console.log(`NOVA server listening on :${config.port}`);
+    });
+    server.ref();
+
+    // Keep the event loop alive and handle graceful shutdown.
+    const keepAlive = setInterval(() => {}, 1 << 30);
+    function shutdown(signal) {
+      console.log(`Received ${signal}, shutting down…`);
+      clearInterval(keepAlive);
+      server.close(() => process.exit(0));
+    }
+    process.on('SIGTERM', () => shutdown('SIGTERM'));
+    process.on('SIGINT',  () => shutdown('SIGINT'));
+  })();
 }
 
 module.exports = { createApp };

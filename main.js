@@ -130,7 +130,10 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-      }).then(function (r) { return r.json(); }).then(function (res) {
+      }).then(function (r) {
+        if (!r.ok) { return r.text().then(function (t) { throw new Error(t || 'Submission failed. Please try again.'); }); }
+        return r.json();
+      }).then(function (res) {
         if (!res.ok) { throw new Error((res.errors && res.errors[0]) || 'Submission failed'); }
 
         // Animate form out, show success
